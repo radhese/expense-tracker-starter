@@ -23,6 +23,10 @@ No test runner is configured.
 
 ## Architecture
 
-The entire app lives in a single file: `src/App.jsx`. All state, filtering logic, and rendering are colocated there — no separate components, hooks, or utilities yet. State includes a `transactions` array (with fields `id`, `description`, `amount`, `type`, `category`, `date`) plus form and filter state.
+`App.jsx` is the root — it owns the `transactions` array (fields: `id`, `description`, `amount`, `type`, `category`, `date`) and a `handleAdd` callback, then delegates everything else to three child components:
 
-**Known intentional bug:** `amount` is stored as a string (raw input value), so the `reduce` calls for `totalIncome` and `totalExpenses` do string concatenation instead of numeric addition, producing wrong summary totals.
+- **`Summary.jsx`** — receives `transactions`, computes `totalIncome`, `totalExpenses`, and `balance` internally, renders the three summary cards.
+- **`TransactionForm.jsx`** — owns its own form state (`description`, `amount`, `type`, `category`), calls `onAdd(transaction)` on submit. Receives `categories` as a prop.
+- **`TransactionList.jsx`** — owns its own filter state (`filterType`, `filterCategory`), renders the filtered table. Receives `transactions` and `categories` as props.
+
+`categories` is a module-level constant in `App.jsx`, passed down to both `TransactionForm` and `TransactionList`. Transaction `amount` is always stored as a number (`parseFloat`).
